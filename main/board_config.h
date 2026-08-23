@@ -25,6 +25,9 @@
 #define BOARD_UART_MAX_FRAME_SIZE     2048
 #define BOARD_UART_EVENT_QUEUE_SIZE   64
 
+/* Set to 1 only while debugging; per-frame HEX logs can block forwarding. */
+#define BOARD_UART_DATA_LOG_ENABLE    0
+
 /* One RX interrupt per byte allows a precise software 3.5-character timer. */
 #define BOARD_UART_RX_FULL_THRESHOLD  1
 #define BOARD_UART_FRAME_GAP_BITS     35

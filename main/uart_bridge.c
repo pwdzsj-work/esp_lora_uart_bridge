@@ -22,9 +22,11 @@ typedef struct {
 } forward_task_config_t;
 
 static const char *TAG = "UART_BRIDGE";
+#if BOARD_UART_DATA_LOG_ENABLE
 static const char *UART2_RX_TAG = "UART2_RX";
 static const char *UART2_TX_TAG = "UART2_TX";
 static const char *LORA_TX_TAG = "LORA_TX";
+#endif
 static bool s_started;
 static QueueHandle_t s_uart1_queue;
 static QueueHandle_t s_uart2_queue;
@@ -90,13 +92,15 @@ static void forward_frame(const forward_task_config_t *config,
 {
         int written = uart_write_bytes(config->destination, data, length);
 
-        /* Keep logging after uart_write_bytes() so it cannot delay forwarding. */
+#if BOARD_UART_DATA_LOG_ENABLE
+        /* Keep optional data logging after uart_write_bytes(). */
         if (config->source == BOARD_UART2_PORT) {
             ESP_LOGI(UART2_RX_TAG, "GPIO%d received %d byte(s)",
                      BOARD_UART2_RX_GPIO, (int)length);
             ESP_LOG_BUFFER_HEX_LEVEL(UART2_RX_TAG, data, length,
                                      ESP_LOG_INFO);
         }
+#endif
         if (written != (int)length) {
             ESP_LOGE(TAG,
                      "UART%d -> UART%d forwarding failed: read=%d written=%d",
@@ -112,6 +116,7 @@ static void forward_frame(const forward_task_config_t *config,
             return;
         }
 
+#if BOARD_UART_DATA_LOG_ENABLE
         if (config->destination == BOARD_UART1_PORT) {
             ESP_LOGI(LORA_TX_TAG,
                      "GPIO%d TX completed: %d byte(s) from GPIO%d RX",
@@ -124,6 +129,7 @@ static void forward_frame(const forward_task_config_t *config,
             ESP_LOG_BUFFER_HEX_LEVEL(UART2_TX_TAG, data, written,
                                      ESP_LOG_INFO);
         }
+#endif
 }
 
 static void frame_gap_timer_callback(void *argument)
