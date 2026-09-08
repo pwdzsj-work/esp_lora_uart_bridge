@@ -1,6 +1,7 @@
 #include "uart_bridge.h"
 
 #include "board_config.h"
+#include "status_led.h"
 
 #include "driver/uart.h"
 #include "esp_check.h"
@@ -25,6 +26,7 @@ static const char *TAG = "UART_BRIDGE";
 #if BOARD_UART_DATA_LOG_ENABLE
 static const char *UART2_RX_TAG = "UART2_RX";
 static const char *UART2_TX_TAG = "UART2_TX";
+static const char *LORA_RX_TAG = "LORA_RX";
 static const char *LORA_TX_TAG = "LORA_TX";
 #endif
 static bool s_started;
@@ -86,15 +88,23 @@ static esp_err_t configure_uart(uart_port_t port, int baud_rate,
              port, tx_gpio, rx_gpio, baud_rate);
     return ESP_OK;
 }
-
 static void forward_frame(const forward_task_config_t *config,
                           const uint8_t *data, size_t length)
 {
+        if (config->source == BOARD_UART1_PORT) {
+            status_led_note_lora_activity();
+        }
+
         int written = uart_write_bytes(config->destination, data, length);
 
 #if BOARD_UART_DATA_LOG_ENABLE
         /* Keep optional data logging after uart_write_bytes(). */
-        if (config->source == BOARD_UART2_PORT) {
+        if (config->source == BOARD_UART1_PORT) {
+            ESP_LOGI(LORA_RX_TAG, "GPIO%d RX received: %d byte(s)",
+                     BOARD_UART1_RX_GPIO, (int)length);
+            ESP_LOG_BUFFER_HEX_LEVEL(LORA_RX_TAG, data, length,
+                                     ESP_LOG_INFO);
+        } else if (config->source == BOARD_UART2_PORT) {
             ESP_LOGI(UART2_RX_TAG, "GPIO%d received %d byte(s)",
                      BOARD_UART2_RX_GPIO, (int)length);
             ESP_LOG_BUFFER_HEX_LEVEL(UART2_RX_TAG, data, length,
@@ -114,6 +124,10 @@ static void forward_frame(const forward_task_config_t *config,
             ESP_LOGE(TAG, "UART%d TX completion timeout: %s",
                      config->destination, esp_err_to_name(tx_result));
             return;
+        }
+
+        if (config->destination == BOARD_UART1_PORT) {
+            status_led_note_lora_activity();
         }
 
 #if BOARD_UART_DATA_LOG_ENABLE

@@ -2,7 +2,7 @@
   "idf.currentSetup": "C:\\esp\\v5.5.5\\esp-idf",
   "idf.buildPath": "${workspaceFolder}\\build",
   "idf.flashType": "UART",
-  "idf.portWin": "COM5",
+  "idf.portWin": "COM12",
   "idf.customExtraVars": {
     "IDF_PATH": "C:\\esp\\v5.5.5\\esp-idf",
     "IDF_TOOLS_PATH": "C:\\Espressif\\tools",
