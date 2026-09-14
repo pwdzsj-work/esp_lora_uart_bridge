@@ -7,12 +7,12 @@
  * SCH_Schematic1_2026-09-01.pdf:
  *
  * UART0 is connected to CH340B and is reserved for flashing and logs.
- * UART1: TXD1=IO17, RXD1=IO16
+ * UART1 (current wiring): TXD1=IO16, RXD1=IO17
  * UART2: TXD2=IO32, RXD2=IO33
  */
 #define BOARD_UART1_PORT              UART_NUM_1
-#define BOARD_UART1_TX_GPIO           GPIO_NUM_17
-#define BOARD_UART1_RX_GPIO           GPIO_NUM_16
+#define BOARD_UART1_TX_GPIO           GPIO_NUM_16
+#define BOARD_UART1_RX_GPIO           GPIO_NUM_17
 #define BOARD_UART1_BAUD_RATE         9600
 
 #define BOARD_UART2_PORT              UART_NUM_2

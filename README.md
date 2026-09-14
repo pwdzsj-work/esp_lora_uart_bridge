@@ -6,14 +6,14 @@ ESP32-WROOM-32E：
 | 接口 | TX | RX | 默认参数 | 用途 |
 |---|---:|---:|---|---|
 | UART0 | 原理图 RXD0/TXD0 | 原理图 RXD0/TXD0 | ESP-IDF 控制台默认值 | CH340B 下载和日志 |
-| UART1 | GPIO17 | GPIO16 | 9600 8N1 | 被转发串口 |
+| UART1 | GPIO16 | GPIO17 | 9600 8N1 | LoRa 串口 |
 | UART2 | GPIO32 | GPIO33 | 9600 8N1 | 转发目标串口 |
 
 固件默认进行双向透明转发：
 
 ```text
-UART1 RX (GPIO16)  -> UART2 TX (GPIO32)
-UART2 RX (GPIO33)  -> UART1 TX (GPIO17)
+UART1 RX (GPIO17)  -> UART2 TX (GPIO32)
+UART2 RX (GPIO33)  -> UART1 TX (GPIO16)
 ```
 
 它不会解析、修改或添加协议数据，二进制数据也可以直接透传。UART0 不参与
